@@ -13,7 +13,7 @@
 
 volatile bool val = false;
 
-static const char *ACCESS_KEY = "ZYVuceCnoLjpOZHD0FJrlIaFbrs14HpeCJGdsaS0qA/FE3hY6KC9sg=="; // AccessKey string ottenuto dal Picovoice Console
+static const char *ACCESS_KEY = "ZYVuceCnoLjpOZHD0FJrlIaFbrs14HpeCJGdsaS0qA/FE3hY6KC9sg=="; // AccessKey string Picovoice Console
 
 static pv_picovoice_t *handle = NULL;
 
@@ -35,9 +35,9 @@ bool firstRingComplete = false;
 
 
 
-unsigned long startTime = 0; // Variabile per memorizzare il tempo di inizio del tocco
-unsigned long endTime = 0;   // Variabile per memorizzare il tempo di fine del tocco
-bool isTouched = false;      // Stato del sensore touch
+unsigned long startTime = 0; 
+unsigned long endTime = 0; 
+bool isTouched = false;     
 int touchCount = 0;
 
 Adafruit_NeoPixel strip1 = Adafruit_NeoPixel(NUM_LEDS1, PIN1, NEO_GRB + NEO_KHZ800);
@@ -50,14 +50,13 @@ volatile bool is_drink = false;
 static void turn_off_check(void) {
   
     for (int i = 0; i < NUM_LEDS1; i++) {
-        strip1.setPixelColor(i, strip1.Color(0, 0, 0)); // Imposta il colore nero per spegnere il LED
-    }
-    strip1.show(); // Aggiorna il display del primo anello
+        strip1.setPixelColor(i, strip1.Color(0, 0, 0)); 
+    strip1.show(); 
 
     for (int i = 0; i < NUM_LEDS2; i++) {
-        strip2.setPixelColor(i, strip2.Color(0, 0, 0)); // Imposta il colore nero per spegnere il LED
+        strip2.setPixelColor(i, strip2.Color(0, 0, 0)); 
     }
-    strip2.show(); // Aggiorna il display del secondo anello
+    strip2.show(); 
 
     Serial.print("turnoffcheckok");
 }
@@ -73,15 +72,15 @@ static void listening(void) {
         state = (state + 1) % 2; // Alterna tra 0 e 1
 
         if (state == 0) {
-            // Stato 0: Imposta la luminosità dei LED a 20
+          
             for (int i = 0; i < NUM_LEDS2; i++) {
-                strip2.setPixelColor(i, strip2.Color(0, 0, 100)); // Imposta il colore blu
+                strip2.setPixelColor(i, strip2.Color(0, 0, 100)); 
             }
             
         } else {
             // Stato 1: Diminuire la luminosità dei LED a 10
             for (int i = 0; i < NUM_LEDS2; i++) {
-                strip2.setPixelColor(i, strip2.Color(0, 0, 80)); // Dim LED blu
+                strip2.setPixelColor(i, strip2.Color(0, 0, 80));
             }
             
         }
@@ -97,20 +96,18 @@ static void Speaking(void) {
 
     unsigned long currentTime = millis();
 
-    if (currentTime - lastChangeTime >= 500) { // 5000 ms = 5 secondi
+    if (currentTime - lastChangeTime >= 500) { 
         lastChangeTime = currentTime;
         state = (state + 1) % 2; // Alterna tra 0 e 1
 
         if (state == 0) {
-            // Stato 0: Imposta la luminosità dei LED a 20
             for (int i = 0; i < NUM_LEDS2; i++) {
-                strip2.setPixelColor(i, strip2.Color(20, 20, 20)); // Imposta il colore blu
+                strip2.setPixelColor(i, strip2.Color(20, 20, 20)); 
             }
             
         } else {
-            // Stato 1: Diminuire la luminosità dei LED a 10
             for (int i = 0; i < NUM_LEDS2; i++) {
-                strip2.setPixelColor(i, strip2.Color(10, 10, 10)); // Dim LED blu
+                strip2.setPixelColor(i, strip2.Color(10, 10, 10)); 
             }
             
         }
@@ -158,24 +155,24 @@ static void wake_word_callback(void) {
     turn_off_check();
 
     for (int i = 0; i < 12; i++) {
-        strip2.setPixelColor(i, strip2.Color(100, 100, 100)); // bianco
+        strip2.setPixelColor(i, strip2.Color(100, 100, 100));
         strip2.show();
         delay(25); // Attende 25 ms
-        strip2.setPixelColor(i, strip2.Color(0, 0, 0)); // Spegne il LED corrente
+        strip2.setPixelColor(i, strip2.Color(0, 0, 0)); 
         strip2.show();
     }
     delay(500);
 
     for (int i = 0; i < NUM_LEDS2; i++) {
-        strip2.setPixelColor(i, strip2.Color(0, 0, 0)); // Spegni il LED corrente
+        strip2.setPixelColor(i, strip2.Color(0, 0, 0));
     }
 
     for (int i = 0; i < NUM_LEDS1; i++) {
-        strip1.setPixelColor(i, strip1.Color(0, 0, 0)); // Spegni il LED corrente
+        strip1.setPixelColor(i, strip1.Color(0, 0, 0));
     }
     strip1.show();
     strip2.show();
-    delay(500); // Mantieni i LED spenti per 500 ms
+    delay(500);
 }
 
 static void inference_callback(pv_inference_t *inference) {
@@ -203,7 +200,7 @@ static void inference_callback(pv_inference_t *inference) {
 
 
 
-            // Gestione per l'intent "Show me the water drunk"
+            //Show me the water drunk
             if (strcmp(inference->intent, "show_water") == 0) {
               turn_off_check();
               val = true;
@@ -215,7 +212,7 @@ static void inference_callback(pv_inference_t *inference) {
               turn_off_check();
 
             }
-            // Gestione per l'intent "Show Me My  period Diary"
+            //Show Me My  period Diary
             else if (strstr(inference->intent, "show_menstrual") != NULL) {
             Serial.println("Intent: show_menstrual");
             turn_off_check();
@@ -223,8 +220,6 @@ static void inference_callback(pv_inference_t *inference) {
             myDFPlayer.play(14);
             delay (7000);
             turn_off_check();
-
-            // Cambia colore dei LED a rosso con schema 3 accesi, 1 spento, ripetuto per 7 volte
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 3; j++) {
                     int ledIndex = i * 4 + j; // Calcola l'indice del LED
@@ -234,7 +229,7 @@ static void inference_callback(pv_inference_t *inference) {
                         delay(100);
                     }
                 }
-                // Spegni il quarto LED nel gruppo di 4
+
                 int ledIndex = i * 4 + 3;
                 if (ledIndex < NUM_LEDS1) {
                     strip1.setPixelColor(ledIndex, strip1.Color(0, 0, 0)); // Spegni il LED
@@ -245,7 +240,7 @@ static void inference_callback(pv_inference_t *inference) {
             }
         }
 
-        // Gestione per l'intent "Show Me my antibiotics diary"
+        //Show Me my antibiotics diary
         else if (strstr(inference->intent, "show_pills") != NULL) {
         Serial.println("Intent: show_pills");
         turn_off_check();
@@ -254,39 +249,33 @@ static void inference_callback(pv_inference_t *inference) {
         turn_off_check();
         
     
-        int count = 0;  // Conta i LED accesi
-        
-        // Accendere i LED alternati sulla prima striscia
+        int count = 0;  // reset after showing antibiotics diary
+    
         for (int i = 0; i < 17 && count < 7; i += 2) {
             strip1.setPixelColor(i, strip1.Color(0, 100, 0)); // blu
             strip1.show();
             delay(100);
             count++;
         }
-
-    // Reset count per la seconda striscia
    
     
-    // Accendere i primi 4 LED verdi sul secondo anello
+    // 4 pills per day
             for (int i = 0; i < 4; i++) {
-                strip2.setPixelColor(i, strip2.Color(0, 100, 0)); // verde
+                strip2.setPixelColor(i, strip2.Color(0, 100, 0)); // green
                 strip2.show();
                 delay(100);
             }
 
-            // Accendere i successivi 4 LED rossi sul secondo anello
-            
-
-            // Accendere gli ultimi 4 LED blu sul secondo anello
+            // how many days finished
             for (int i = 8; i < 12; i++) {
-                strip2.setPixelColor(i, strip2.Color(0, 0, 100)); // blu
+                strip2.setPixelColor(i, strip2.Color(0, 0, 100)); // blue
                 strip2.show();
                 delay(100);
             }
         }
 
 
-        // Gestione per l'intent "Goodmorning"
+        //Good morning activation
         else if (strstr(inference->intent, "Good_morning") != NULL) {
           
           Serial.println("Intent: Good_morning");
@@ -312,7 +301,7 @@ static void inference_callback(pv_inference_t *inference) {
             Serial.println("Intent: water_2");
             turn_off_check();
 
-            // Cambia colore dei LED a blu
+            // Set LED in blue colour
 
             myDFPlayer.play(5);
             Speaking();
@@ -324,7 +313,7 @@ static void inference_callback(pv_inference_t *inference) {
          else if (strstr(inference->intent, "water_3") != NULL) {
             Serial.println("Intent: water_3");
             turn_off_check();
-            // Cambia colore dei LED a blu
+            // Set LED in blue colour
             myDFPlayer.play(10);
             Speaking();
           delay (10000);
@@ -335,7 +324,7 @@ static void inference_callback(pv_inference_t *inference) {
          else if (strstr(inference->intent, "Menstrual_1") != NULL) {
             Serial.println("Intent: Menstrual_1");
             turn_off_check();
-            // Cambia colore dei LED a blu
+            // Set LED in blue colour
             myDFPlayer.play(13);
             Speaking();
           delay (9000);
@@ -346,7 +335,7 @@ static void inference_callback(pv_inference_t *inference) {
          else if (strstr(inference->intent, "Menstrual_2") != NULL) {
             Serial.println("Intent: Menstrual_2");
             turn_off_check();
-            // Cambia colore dei LED a blu
+            // Set LED in blue colour
             myDFPlayer.play(6);
             Speaking();
           delay (13000);
@@ -357,7 +346,7 @@ static void inference_callback(pv_inference_t *inference) {
         else if (strstr(inference->intent, "Antibiotics_1") != NULL) {
             Serial.println("Intent: Antibiotics_1");
             turn_off_check();
-            // Cambia colore dei LED a blu
+            // CSet LED in blue colour 
            myDFPlayer.play(1);
            Speaking();
           delay (15000);
@@ -367,7 +356,7 @@ static void inference_callback(pv_inference_t *inference) {
         else if (strstr(inference->intent, "Antibiotics_2") != NULL) {
             Serial.println("Intent: Antibiotics_2");
             turn_off_check();
-            // Cambia colore dei LED a blu
+            // Set LED in blue colour
            myDFPlayer.play(2);
            Speaking();
           delay (24000);
@@ -401,15 +390,15 @@ static void inference_callback(pv_inference_t *inference) {
 }
 
 static void drinking(void) {
-    // Contatore dei tocchi
+    // touch controller (water intake)
     static int touchCount = 0;
     
 
     Serial.println("is pressed");
 
-    // Incrementa il contatore dei tocchi
+    // controlling the touch sensor
     touchCount++;
-    Serial.print("Tocchi: ");
+    Serial.print("Touchings: ");
     Serial.println(touchCount);
 
     // Accendi i LED in base al numero di tocchi
@@ -419,13 +408,13 @@ static void drinking(void) {
         if (i < numLEDsToLight) {
             strip1.setPixelColor(i, strip1.Color(0, 0, 20)); // Green color
         } else {
-            strip1.setPixelColor(i, strip1.Color(0, 0, 0)); // Spegni il LED
+            strip1.setPixelColor(i, strip1.Color(0, 0, 0)); // reset LED
         }
     }
    
     strip1.show();
 
-    // Se i tocchi raggiungono 5, riproduci il file audio
+    // if touchcount is filled (1st ring), play the water message
     if (touchCount >= 5) {
         firstRingComplete = true;
         
@@ -434,7 +423,7 @@ static void drinking(void) {
         delay(4000);
         turn_off_check();
 
-        // Reset touch count dopo aver riprodotto l'audio
+        // Reset touch count after playing audio (water intake)
         touchCount = 0;
         currentPixel1 = 0; // Reset the LED index
     }
@@ -565,31 +554,31 @@ void loop() {
                 Serial.println(touchCount);
                 startTime = millis();
                 if (touchCount == 1) {
-                    Serial.println("1 tocco");
+                    Serial.println("1 audio");
                     for (int i = 0; i < 5; i++) {
                         strip1.setPixelColor(i, strip1.Color(0, 0, 100));
                     }
                     strip1.show();
                 } else if (touchCount == 2) {
-                    Serial.println("2 tocchi");
+                    Serial.println("2 audio");
                     for (int i = 5; i < 10; i++) {
                         strip1.setPixelColor(i, strip1.Color(0, 0, 100));
                     }
                     strip1.show();
                 } else if (touchCount == 3) {
-                    Serial.println("3 tocchi");
+                    Serial.println("3 audio");
                     for (int i = 10; i < 15; i++) {
                         strip1.setPixelColor(i, strip1.Color(0, 0, 100));
                     }
                     strip1.show();
                 } else if (touchCount == 4) {
-                    Serial.println("4 tocchi");
+                    Serial.println("4 audio");
                     for (int i = 15; i < 20; i++) {
                         strip1.setPixelColor(i, strip1.Color(0, 0, 100));
                     }
                     strip1.show();
                 } else if (touchCount == 5) {
-                    Serial.println("5 tocchi");
+                    Serial.println("5 audio");
                     for (int i = 20; i < 24; i++) {
                         strip1.setPixelColor(i, strip1.Color(0, 0, 100));
                     }
@@ -608,7 +597,6 @@ void loop() {
             }
         } else {
             isTouched = false;
-            // Serial.println("Non tocco");
             for (int i = 23; i >= 0; i--) {
                 strip1.setPixelColor(i, strip1.Color(0, 0, 0));
             }
